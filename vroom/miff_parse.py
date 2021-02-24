@@ -57,18 +57,49 @@ def cleanup_chunks(chunks):
         else:
             parsed_chunks[k] = v
     parsed_chunks["CHCK"] = [coords(x) for x in chunks["CHCK"]]
-    # parsed_chunks["ANAI"] = [[uint32(x[y : y + 4]) for y in range(0, len(x), 4)] for x in chunks["ANAI"]]
+    parsed_chunks["LABL"] = [x for x in parsed_chunks["LABL"].split(chr(1)) if x != '']
+    if "ANAI" in parsed_chunks:
+        parsed_chunks["ANAI"] = [[int32(x[y : y + 4]) for y in range(0, len(x), 4)] for x in parsed_chunks["ANAI"]]
+    if "EVNT" in parsed_chunks:
+        parsed_chunks["EVNT"] = [parse_event(x) for x in parsed_chunks["EVNT"]]
+    if "EVNT" in parsed_chunks:
+        parsed_chunks["EVTG"] = [parse_evtg(x) for x in parsed_chunks["EVTG"]]
+    if "APAK" in parsed_chunks:
+        parsed_chunks["APAK"] = [parse_apak(x) for x in parsed_chunks["APAK"]]
+    parsed_chunks["EPSD"] = [[uint32(x[y : y + 4]) for y in range(0, len(x), 4)] for x in parsed_chunks["EPSD"]]
     return parsed_chunks
+
+def parse_event(raw):
+    result = []
+    for x in range(0, 0x20, 4):
+        result += [uint32(raw[x : x + 4])]
+    result += [raw[0x20 : -4]]
+    return result
+
+def parse_apak(raw):
+    result = []
+    result = raw[ : -4]
+    return result
+
+def parse_evtg(raw):
+    result = []
+    raw = raw[ : -2]
+    for x in range(len(raw) // 4):
+        result += [uint32(raw[x * 4 : x * 4 + 4])]
+    return result
 
 
 def uint32(b):
     return struct.unpack('<I', b)[0]
 
+def int32(b):
+    return struct.unpack('<i', b)[0]
+
 def char4(b):
     return struct.unpack('4s', b)[0].decode("ascii")[::-1]
 
-def string(b):
-    return b[:-1].decode("ascii")
+def string(b, code="windows-1252"):
+    return b[:-1].decode(code)
 
 def uint16(b):
     return struct.unpack('<H', b)[0]

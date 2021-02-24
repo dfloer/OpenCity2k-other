@@ -7,6 +7,11 @@ Warning, this is more or less rough notes right now.
 Starts with `MIFF`, 2 and then `SCED` and `STCS` chunk names.
 Note that all chunk names (**except MIFF**) are reversed in the .scn file. So STCS is actually CSTS.
 
+
+## Chunks
+
+General format is the chunk name (4B), length of the chunk (4B) which is inclusive of the name and length, and then the chunk data.
+
 |Chunk Name|Length (- for variable) | Multiple | Notes |
 |-|-|-|-|
 |CITY|-|N|Name of the .sc2 file to load.|
@@ -20,30 +25,29 @@ Note that all chunk names (**except MIFF**) are reversed in the .scn file. So ST
 |AMMO|4B|N||
 |LAPS|4B|N|How many laps.|
 |IANM|1B|N||
-|ITXT|-|N||
+|ITXT|-|N|Intro Text - description text on mission selection screen.|
 |WANM|1B|N||
-|WTXT|-|N||
+|WTXT|-|N|Win Text?|
 |LANM|1B|N||
-|LTXT|-|N||
+|LTXT|-|N|Loss Text?|
 |PRGN|4B|N||
 |#AIS|4B|N|Number of AI cars|
 |ANAI|48B|Y|Data related to AIs, there will be an equal number here to #AIS|
 |#EVS|4B|N||
 |EVNT|?|Y|Events. Count equal to #EVS.|
-|LABL|?|N|Label?|
+|LABL|-|N|Location labels in the game.|
 |#CHK|4B|N|Number of checkpoints|
-|CHCK|4B|Y|(x, y) coordinate pair for the checkpoints. Same number of entries as #CHK.|
+|CHCK|4B|Y|(x, y) coordinate pair for the checkpoints.|
 |EPSD|24B|N||
 |#PKG|4B|N|# of packages|
 |APAK|?|Y|Package info. Count equal to #PKG|
-|EVTG|?|Y|Unknown|
-
+|EVTG|14B|Y|Unknown|
 
 ## Subsections
 
 ### LABL
 
-Contains data entries for labels.
+Contains data entries for location labels. Unknown where the number of entries comes from, otherwise, there are strings seperated by a lot of `0x01` bytes. Also unknown how they get triggered.
 
 ### ANAI
 
@@ -56,15 +60,21 @@ Unknown.
 
 ### APAK
 
-Data related to the package. At minimum, contains text and a sound to play.
+Data related to the package. At minimum, contains text indicating what to do with the package and a sound to play.
 
 ### EVNT
 
 Events. Rewards stored here.
+Always seems to end with `CD CD CD CD` when present.
 
 ### EVTG
 
-Unknown.
+Unknown. `CD CD` ending, padding?
+
+### CHCK
+
+Contains the (X, Y) coordinate to the city file for the checkpoints.
+Same number of entries as #CHK. Races need at least one checkpoint.
 
 ## Notes
 

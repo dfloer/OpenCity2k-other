@@ -25,7 +25,6 @@ if __name__ == "__main__":
         if isinstance(v, list):
             print()
             for x in v:
-                print(f"\t{x}")
+                print(f"\t{x}, len: {len(x)}")
         else:
             print(v)
-        # print(k)
