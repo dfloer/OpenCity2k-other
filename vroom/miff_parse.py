@@ -70,16 +70,25 @@ def cleanup_chunks(chunks):
     return parsed_chunks
 
 def parse_event(raw):
-    result = []
-    for x in range(0, 0x20, 4):
-        result += [uint32(raw[x : x + 4])]
-    result += [raw[0x20 : -4]]
-    return result
+    data = [uint32(raw[x : x + 4]) for x in range(4, 0x20, 4)]
+    extra = [raw[0x20 : -4]]
+    return {"id": uint32(raw[0 :  4]), "data": data, "extra": extra, "len": len(data) + 1 + len(extra)}
 
 def parse_apak(raw):
-    result = []
     result = raw[ : -4]
-    return result
+    apak_id = uint32(raw[0 : 4])
+    data = [int32(result[x : x + 4]) for x in range(4, 20, 4)]
+    extra = result[20 :]
+    text = []
+    wave = []
+    extra = [x for x in string(extra).split(chr(1)) if x != '']
+    for x in extra:
+        if "wav" in x or "WAV" in x:
+            wave += [x]
+        else:
+            text += [x]
+
+    return {"id": apak_id, "data": data, "text": text, "wave": wave}
 
 def parse_evtg(raw):
     result = []

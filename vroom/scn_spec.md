@@ -62,10 +62,31 @@ Unknown.
 
 Data related to the package. At minimum, contains text indicating what to do with the package and a sound to play.
 
+5x4B of of data to start:
+
+|0|1|2|3|4|
+|-|-|-|-|-|
+|id|Bonus|?|?|?|
+
+At least 0 and 1 have a bonus attached to them.
+
+Then text and wav files to play as appropriate.
+
+
 ### EVNT
 
 Events. Rewards stored here.
 Always seems to end with `CD CD CD CD` when present.
+
+Looks to be a first part of 8 numbers, and then strings/wav files as appropriate.
+
+Possible format (each is 4B int32):
+
+|0|1|2|3|4|5|6|7|
+|-|-|-|-|-|-|-|-|
+|id|bonus points multiplier|additional time (seconds)|Additional $|?|?|?|?|
+
+id 999 is special and to do with levels?
 
 ### EVTG
 
